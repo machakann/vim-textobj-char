@@ -1,0 +1,97 @@
+*textobj-char.txt*				Last change:27-Sep-2014.
+
+The textobject plugin to select a character.
+
+
+Author  : machakann <mckn@outlook.jp>
+License : NYSL license
+          Japanese <http://www.kmonos.net/nysl/>
+          English (Unofficial) <http://www.kmonos.net/nysl/index.en.html>
+
+==============================================================================
+CONTENTS					*textobj-char-contents*
+
+INTRODUCTION            |textobj-char-introduction|
+KEYMAPPINGS             |textobj-char-keymappings|
+
+==============================================================================
+INTRODUCTION					*textobj-char-introduction*
+
+*textobj-char* is a Vim plugin to implement textobjects to select a character.
+It works like built-in |f| and |F| commands. Assume that the following
+situation.
+>
+	'#' represents the cursor position.
+	  a  #  b  c
+<
+Press '|<Plug>(textobj-char-f-i)|b', then a character 'b' would be selected.
+Press '|<Plug>(textobj-char-F-i)|a', then a character 'a' would be selected.
+Press '|<Plug>(textobj-char-f-a)|b', then a character 'b' and vicinal spaces
+are selected. Press '|<Plug>(textobj-char-F-a)|a', then a character 'a' and
+vicinal spaces are selected.
+>
+	<Plug>(textobj-char-f-i)b
+	        *     : selected area
+	  a     b  c
+
+	<Plug>(textobj-char-F-i)b
+	  *           : selected area
+	  a     b  c
+
+	<Plug>(textobj-char-f-a)b
+	   ********   : selected area
+	  a     b  c
+
+	<Plug>(textobj-char-F-a)b
+	********      : selected area
+	  a     b  c
+<
+
+
+
+==============================================================================
+KEYMAPPINGS					*textobj-char-keymappings*
+
+This plugin serves following keymappings.
+
+direction	keymappings
+--------------------------------------------------------------------------
+forward		<Plug>(textobj-char-f-i)
+backward	<Plug>(textobj-char-F-i)
+forward		<Plug>(textobj-char-f-a)
+backward	<Plug>(textobj-char-F-a)
+--------------------------------------------------------------------------
+
+Default keymappings are not supplied. Please map to use them as you like.
+>
+	omap if <Plug>(textobj-char-f-i)
+	omap iF <Plug>(textobj-char-F-i)
+	omap af <Plug>(textobj-char-f-a)
+	omap aF <Plug>(textobj-char-F-a)
+
+	xmap if <Plug>(textobj-char-f-i)
+	xmap iF <Plug>(textobj-char-F-i)
+	xmap af <Plug>(textobj-char-f-a)
+	xmap aF <Plug>(textobj-char-F-a)
+<
+
+------------------------------------------------------------------------------
+keymappings~
+<Plug>(textobj-char-f-i)			*<Plug>(textobj-char-f-i)*
+	This keymapping selects a character searching forward way.
+
+<Plug>(textobj-char-F-i)			*<Plug>(textobj-char-F-i)*
+	This keymapping selects a character searching backward way.
+
+<Plug>(textobj-char-f-a)			*<Plug>(textobj-char-f-a)*
+	This keymapping selects a character and vicinal spaces searching
+	forward way.
+
+<Plug>(textobj-char-F-a)			*<Plug>(textobj-char-F-a)*
+	This keymapping selects a character and vicinal spaces searching
+	backward way.
+
+
+
+==============================================================================
+vim:tw=78:ts=8:ft=help:norl:noet:
