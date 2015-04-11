@@ -76,7 +76,7 @@ endfunction
 
 function! s:selector(mode, head, tail)
   if a:head != s:null_pos && a:tail != s:null_pos
-    let visualmode = a:mode ==# 'o' || visualmode() ==? 'v' ? 'v' : "\<C-v>"
+    let visualmode = a:mode ==# 'x' && visualmode() ==# "\<C-v>" ? "\<C-v>" : 'v'
 
     execute 'normal! ' . visualmode
     call cursor(a:head)
