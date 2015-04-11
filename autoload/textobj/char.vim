@@ -5,6 +5,7 @@ let s:plug_cap = "\<Plug>"
 let s:cursorhold = s:plug_cap[0:1] . '`'
 unlet s:plug_cap
 
+let s:state    = 0
 let s:null_pos = [0, 0]
 
 
@@ -43,6 +44,7 @@ function! s:clerk(kind, mode)
 
   endif
 
+  let s:state = 1
   return cmd
 endfunction
 
@@ -51,7 +53,7 @@ function! textobj#char#searcher(kind, mode, c, count)
   let lnum = view.lnum
   let flag = a:kind[1] ==# 'F' ? 'b' : ''
   let c    = escape(a:c, '~"\.^$[]*')
-  for i in range(a:count)
+  for i in range(s:state ? a:count : v:count1)
     let pos  = searchpos(c, flag, lnum)
   endfor
 
@@ -68,6 +70,7 @@ function! textobj#char#searcher(kind, mode, c, count)
   endif
 
   call s:selector(a:mode, head, tail)
+  let s:state = 0
   return
 endfunction
 
