@@ -1,4 +1,4 @@
-*textobj-char.txt*				Last change:27-Sep-2014.
+*textobj-char.txt*				Last change:31-Oct-2017.
 
 The textobject plugin to select a character.
 
@@ -17,9 +17,8 @@ KEYMAPPINGS             |textobj-char-keymappings|
 ==============================================================================
 INTRODUCTION					*textobj-char-introduction*
 
-*textobj-char* is a Vim plugin to implement textobjects to select a character.
-It works like built-in |f| and |F| commands. Assume that the following
-situation.
+*textobj-char* is a Vim plugin to add textobjects to select a character.
+It works like built-in |f| and |F| commands. For example:
 >
 	'#' represents the cursor position.
 	  a  #  b  c
