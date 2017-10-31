@@ -1,98 +1,86 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-let s:plug_cap = "\<Plug>"
-let s:cursorhold = s:plug_cap[0:1] . '`'
-unlet s:plug_cap
+let s:FALSE = 0
+let s:TRUE = 1
+let s:NULLPOS = [0, 0]
 
-let s:state    = 0
-let s:null_pos = [0, 0]
+let s:dotrepeat = s:TRUE
 
-
-
-function! textobj#char#i_f(mode)
-  return s:clerk('if', a:mode)
+function! textobj#char#if(mode) abort
+  return s:getchar('if', a:mode)
 endfunction
 
-function! textobj#char#i_F(mode)
-  return s:clerk('iF', a:mode)
+function! textobj#char#iF(mode) abort
+  return s:getchar('iF', a:mode)
 endfunction
 
-function! textobj#char#a_f(mode)
-  return s:clerk('af', a:mode)
+function! textobj#char#af(mode) abort
+  return s:getchar('af', a:mode)
 endfunction
 
-function! textobj#char#a_F(mode)
-  return s:clerk('aF', a:mode)
+function! textobj#char#aF(mode) abort
+  return s:getchar('aF', a:mode)
 endfunction
 
 
 
-function! s:clerk(kind, mode)
+function! s:getchar(kind, mode) abort
   " target character assginment
   while 1
     let c = getchar()
-    if c != s:cursorhold | break | endif
+    if c != "\<CursorHold>" | break | endif
   endwhile
   let c = type(c) == type(0) ? nr2char(c) : c
 
   if c ==# "\<Esc>" || c ==# "\<C-c>"
-    let cmd = (a:mode == 'o') ? "\<Esc>" : "gv"
+    let cmd = (a:mode ==# 'o') ? "\<Esc>" : 'gv'
   else
-    let cmd = printf(":\<C-u>call textobj#char#searcher('%s','%s','%s',%s)\<CR>",
-          \           a:kind, a:mode, c, v:count1)
+    let cmd = printf(":\<C-u>call textobj#char#search('%s','%s','%s',%d)\<CR>",
+                   \ a:kind, a:mode, c, v:count1)
 
   endif
 
-  let s:state = 1
+  let s:dotrepeat = s:FALSE
   return cmd
 endfunction
 
-function! textobj#char#searcher(kind, mode, c, count)
+function! textobj#char#search(kind, mode, c, count) abort
   let view = winsaveview()
   let lnum = view.lnum
   let flag = a:kind[1] ==# 'F' ? 'b' : ''
-  let c    = escape(a:c, '~"\.^$[]*')
-  for i in range(s:state ? a:count : v:count1)
-    let pos  = searchpos(c, flag, lnum)
+  let c = escape(a:c, '~"\.^$[]*')
+  let n = s:dotrepeat is s:FALSE ? a:count : v:count1
+  for i in range(n)
+    let pos = searchpos(c, flag, lnum)
   endfor
 
-  if pos != s:null_pos
-    if a:kind[0] ==# 'i'
-      let [head, tail] = [pos, pos]
-    else
-      let head = searchpos( '\%(^\|\S\)\zs\s*\%#', 'bcn', lnum)
+  if pos != s:NULLPOS
+    let [head, tail] = [pos, pos]
+    if a:kind[0] ==# 'a'
+      let head = searchpos('\%(^\|\S\)\zs\s*\%#', 'bcn', lnum)
       let tail = searchpos('\%#.\s*\ze\%(\S\|$\)', 'cen', lnum)
     endif
+    call s:select(head, tail)
   else
     call winrestview(view)
-    let [head, tail] = [copy(s:null_pos), copy(s:null_pos)]
-  endif
-
-  call s:selector(a:mode, head, tail)
-  let s:state = 0
-  return
-endfunction
-
-function! s:selector(mode, head, tail)
-  if a:head != s:null_pos && a:tail != s:null_pos
-    let visualmode = a:mode ==# 'x' && visualmode() ==# "\<C-v>" ? "\<C-v>" : 'v'
-
-    execute 'normal! ' . visualmode
-    call cursor(a:head)
-    normal! o
-    call cursor(a:tail)
-
-    " counter measure for the 'selection' option being 'exclusive'
-    if &selection == 'exclusive'
-      normal! l
-    endif
-  else
     if a:mode ==# 'x'
       normal! gv
     endif
   endif
-  return
+  let s:dotrepeat = s:TRUE
+endfunction
+
+function! s:select(head, tail) abort
+  normal! v
+  call cursor(a:head)
+  normal! o
+  call cursor(a:tail)
+
+  " counter measure for the 'selection' option being 'exclusive'
+  if &selection == 'exclusive'
+    normal! l
+  endif
 endfunction
 
 let &cpo = s:save_cpo
