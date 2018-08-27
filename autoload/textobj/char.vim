@@ -7,6 +7,10 @@ let s:TRUE = 1
 let s:dotrepeat = s:TRUE
 
 
+" Keymap interface
+" `kind` should be 'i' or 'a'; the selection includes adjucent spaces if it is 'a'
+" `direction` should be 'forward' or 'backward' (case-insensitive)
+" `mode` should be `o` for operator-pending mode or `x` for visual mode
 function! textobj#char#keymap(kind, direction, mode) abort
   " target character assginment
   while 1
@@ -25,6 +29,13 @@ function! textobj#char#keymap(kind, direction, mode) abort
               \ c, v:count1, a:kind, a:direction, a:mode)
 endfunction
 
+
+" Search and select the character assigned
+" `c` is the character searched
+" The `count`th occurrence of `c` is searched
+" `kind` should be 'i' or 'a'; the selection includes adjucent spaces if it is 'a'
+" `direction` should be 'forward' or 'backward'
+" `mode` should be `o` for operator-pending mode or `x` for visual mode
 function! textobj#char#search(c, count, kind, direction, mode) abort
   let view = winsaveview()
 
@@ -51,6 +62,8 @@ function! textobj#char#search(c, count, kind, direction, mode) abort
   let s:dotrepeat = s:TRUE
 endfunction
 
+
+" Select the assigned region; `head` to `tail`
 function! s:select(head, tail) abort
   normal! v
   call cursor(a:head)
@@ -62,6 +75,8 @@ function! s:select(head, tail) abort
   endif
 endfunction
 
+
+" Restore the initial state
 function! s:restore(mode, view) abort
   call winrestview(a:view)
   if a:mode ==# 'x'
@@ -69,9 +84,8 @@ function! s:restore(mode, view) abort
   endif
 endfunction
 
+
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
-" vim:set foldmethod=marker:
-" vim:set commentstring="%s:
 " vim:set ts=2 sts=2 sw=2:
