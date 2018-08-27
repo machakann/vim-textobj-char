@@ -3,29 +3,11 @@ set cpo&vim
 
 let s:FALSE = 0
 let s:TRUE = 1
-let s:NULLPOS = [0, 0]
 
 let s:dotrepeat = s:TRUE
 
-function! textobj#char#if(mode) abort
-  return s:getchar('if', a:mode)
-endfunction
 
-function! textobj#char#iF(mode) abort
-  return s:getchar('iF', a:mode)
-endfunction
-
-function! textobj#char#af(mode) abort
-  return s:getchar('af', a:mode)
-endfunction
-
-function! textobj#char#aF(mode) abort
-  return s:getchar('aF', a:mode)
-endfunction
-
-
-
-function! s:getchar(kind, mode) abort
+function! textobj#char#keymap(kind, direction, mode) abort
   " target character assginment
   while 1
     let c = getchar()
@@ -33,41 +15,39 @@ function! s:getchar(kind, mode) abort
   endwhile
   let c = type(c) == type(0) ? nr2char(c) : c
 
-  if c ==# "\<Esc>" || c ==# "\<C-c>"
-    let cmd = (a:mode ==# 'o') ? "\<Esc>" : 'gv'
-  else
-    let cmd = printf(":\<C-u>call textobj#char#search('%s','%s','%s',%d)\<CR>",
-                   \ a:kind, a:mode, c, v:count1)
-
+  if c ==# "\<Esc>"
+    " cancel the action
+    return a:mode ==# 'x' ? 'gv' : "\<Esc>"
   endif
 
   let s:dotrepeat = s:FALSE
-  return cmd
+  return printf(":\<C-u>call textobj#char#search('%s',%d,'%s','%s','%s')\<CR>",
+              \ c, v:count1, a:kind, a:direction, a:mode)
 endfunction
 
-function! textobj#char#search(kind, mode, c, count) abort
+function! textobj#char#search(c, count, kind, direction, mode) abort
   let view = winsaveview()
-  let lnum = view.lnum
-  let flag = a:kind[1] ==# 'F' ? 'b' : ''
+
   let n = s:dotrepeat is# s:FALSE ? a:count : v:count1
   let c = escape(a:c, '~"\.^$[]*')
+  let flag = a:direction ==# 'backward' ? 'b' : ''
+  let lnum = line('.')
   for i in range(n)
-    let pos = searchpos(c, flag, lnum)
+    if searchpos(c, flag, lnum) == [0, 0]
+      " `count`th `c` have not been found
+      call s:restore(a:mode, view)
+      return
+    endif
   endfor
 
-  if pos != s:NULLPOS
-    let [head, tail] = [pos, pos]
-    if a:kind[0] ==# 'a'
-      let head = searchpos('\%(^\|\S\)\zs\s*\%#', 'bcn', lnum)
-      let tail = searchpos('\%#.\s*\ze\%(\S\|$\)', 'cen', lnum)
-    endif
-    call s:select(head, tail)
+  if a:kind ==# 'a'
+    let head = searchpos('\%(^\|\S\)\zs\s*\%#', 'bcn', lnum)
+    let tail = searchpos('\%#.\s*\ze\%(\S\|$\)', 'cen', lnum)
   else
-    call winrestview(view)
-    if a:mode ==# 'x'
-      normal! gv
-    endif
+    let head = getpos('.')[1:2]
+    let tail = head
   endif
+  call s:select(head, tail)
   let s:dotrepeat = s:TRUE
 endfunction
 
@@ -79,6 +59,13 @@ function! s:select(head, tail) abort
 
   if &selection ==# 'exclusive'
     normal! l
+  endif
+endfunction
+
+function! s:restore(mode, view) abort
+  call winrestview(a:view)
+  if a:mode ==# 'x'
+    normal! gv
   endif
 endfunction
 

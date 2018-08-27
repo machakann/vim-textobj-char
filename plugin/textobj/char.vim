@@ -1,5 +1,5 @@
-" Vim global plugin to define text-object for selecting a character
-" Last Change: 31-Oct-2017.
+" Vim global plugin to define text-objects for selecting a character
+" Last Change: 27-Aug-2018.
 " Maintainer : Masaaki Nakamura <mckn{at}outlook.com>
 
 " License    : NYSL
@@ -11,14 +11,14 @@ if exists("g:loaded_textobj_char")
 endif
 let g:loaded_textobj_char = 1
 
-onoremap <silent><expr> <Plug>(textobj-char-f-i) textobj#char#if('o')
-xnoremap <silent><expr> <Plug>(textobj-char-f-i) textobj#char#if('x')
+onoremap <silent><expr> <Plug>(textobj-char-i-f) textobj#char#keymap('i', 'forward', 'o')
+xnoremap <silent><expr> <Plug>(textobj-char-i-f) textobj#char#keymap('i', 'forward', 'x')
 
-onoremap <silent><expr> <Plug>(textobj-char-F-i) textobj#char#iF('o')
-xnoremap <silent><expr> <Plug>(textobj-char-F-i) textobj#char#iF('x')
+onoremap <silent><expr> <Plug>(textobj-char-i-F) textobj#char#keymap('i', 'backward', 'o')
+xnoremap <silent><expr> <Plug>(textobj-char-i-F) textobj#char#keymap('i', 'backward', 'x')
 
-onoremap <silent><expr> <Plug>(textobj-char-f-a) textobj#char#af('o')
-xnoremap <silent><expr> <Plug>(textobj-char-f-a) textobj#char#af('x')
+onoremap <silent><expr> <Plug>(textobj-char-a-f) textobj#char#keymap('a', 'forward', 'o')
+xnoremap <silent><expr> <Plug>(textobj-char-a-f) textobj#char#keymap('a', 'forward', 'x')
 
-onoremap <silent><expr> <Plug>(textobj-char-F-a) textobj#char#aF('o')
-xnoremap <silent><expr> <Plug>(textobj-char-F-a) textobj#char#aF('x')
+onoremap <silent><expr> <Plug>(textobj-char-a-F) textobj#char#keymap('a', 'backward', 'o')
+xnoremap <silent><expr> <Plug>(textobj-char-a-F) textobj#char#keymap('a', 'backward', 'x')
