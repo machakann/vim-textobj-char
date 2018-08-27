@@ -29,7 +29,7 @@ function! s:getchar(kind, mode) abort
   " target character assginment
   while 1
     let c = getchar()
-    if c != "\<CursorHold>" | break | endif
+    if c !=# "\<CursorHold>" | break | endif
   endwhile
   let c = type(c) == type(0) ? nr2char(c) : c
 
@@ -49,8 +49,8 @@ function! textobj#char#search(kind, mode, c, count) abort
   let view = winsaveview()
   let lnum = view.lnum
   let flag = a:kind[1] ==# 'F' ? 'b' : ''
+  let n = s:dotrepeat is# s:FALSE ? a:count : v:count1
   let c = escape(a:c, '~"\.^$[]*')
-  let n = s:dotrepeat is s:FALSE ? a:count : v:count1
   for i in range(n)
     let pos = searchpos(c, flag, lnum)
   endfor
@@ -77,8 +77,7 @@ function! s:select(head, tail) abort
   normal! o
   call cursor(a:tail)
 
-  " counter measure for the 'selection' option being 'exclusive'
-  if &selection == 'exclusive'
+  if &selection ==# 'exclusive'
     normal! l
   endif
 endfunction
