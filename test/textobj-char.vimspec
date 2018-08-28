@@ -1,0 +1,857 @@
+let s:assert = themis#helper('assert')
+call themis#helper('command').with(s:assert)
+
+let s:endcol = 2147483647
+
+Describe [omap]
+  Context <Plug>(textobj-char-i-f)
+    It searches the assigned character forward
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, 1)
+      execute "normal d\<Plug>(textobj-char-i-f)a"
+      Assert Equals(getline('.'), 'ab c   b  c   a   bc')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, 1)
+      execute "normal d\<Plug>(textobj-char-i-f)b"
+      Assert Equals(getline('.'), 'a c a  b  c   a   bc')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, 1)
+      execute "normal d\<Plug>(textobj-char-i-f)c"
+      Assert Equals(getline('.'), 'ab  a  b  c   a   bc')
+    End
+
+
+    It searches {count}th occurrence
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, 1)
+      execute "normal 2d\<Plug>(textobj-char-i-f)a"
+      Assert Equals(getline('.'), 'ab c a  b  c      bc')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, 1)
+      execute "normal 2d\<Plug>(textobj-char-i-f)b"
+      Assert Equals(getline('.'), 'ab c a    c   a   bc')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, 1)
+      execute "normal 3d\<Plug>(textobj-char-i-f)b"
+      Assert Equals(getline('.'), 'ab c a  b  c   a   c')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, 1)
+      execute "normal 2d\<Plug>(textobj-char-i-f)c"
+      Assert Equals(getline('.'), 'ab c a  b     a   bc')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, 1)
+      execute "normal 3d\<Plug>(textobj-char-i-f)c"
+      Assert Equals(getline('.'), 'ab c a  b  c   a   b')
+    End
+
+
+    It fails if it cannot find the assigned character
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, 1)
+      execute "normal d\<Plug>(textobj-char-i-f)d"
+      Assert Equals(getline('.'), 'ab c a  b  c   a   bc')
+    End
+
+
+    It fails if it cannot find the {count}th occurrence
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, 1)
+      execute "normal 3d\<Plug>(textobj-char-i-f)a"
+      Assert Equals(getline('.'), 'ab c a  b  c   a   bc')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, 1)
+      execute "normal 4d\<Plug>(textobj-char-i-f)a"
+      Assert Equals(getline('.'), 'ab c a  b  c   a   bc')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, 1)
+      execute "normal 4d\<Plug>(textobj-char-i-f)b"
+      Assert Equals(getline('.'), 'ab c a  b  c   a   bc')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, 1)
+      execute "normal 4d\<Plug>(textobj-char-i-f)c"
+      Assert Equals(getline('.'), 'ab c a  b  c   a   bc')
+    End
+  End
+
+  Context <Plug>(textobj-char-i-F)
+    It searches the assigned character backward
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, s:endcol)
+      execute "normal d\<Plug>(textobj-char-i-F)a"
+      Assert Equals(getline('.'), 'ab c a  b  c      bc')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, s:endcol)
+      execute "normal d\<Plug>(textobj-char-i-F)b"
+      Assert Equals(getline('.'), 'ab c a  b  c   a   c')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, s:endcol)
+      execute "normal d\<Plug>(textobj-char-i-F)c"
+      Assert Equals(getline('.'), 'ab c a  b     a   bc')
+    End
+
+
+    It searches {count}th occurrence
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, s:endcol)
+      execute "normal 2d\<Plug>(textobj-char-i-F)a"
+      Assert Equals(getline('.'), 'ab c   b  c   a   bc')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, s:endcol)
+      execute "normal 3d\<Plug>(textobj-char-i-F)a"
+      Assert Equals(getline('.'), 'b c a  b  c   a   bc')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, s:endcol)
+      execute "normal 2d\<Plug>(textobj-char-i-F)b"
+      Assert Equals(getline('.'), 'ab c a    c   a   bc')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, s:endcol)
+      execute "normal 3d\<Plug>(textobj-char-i-F)b"
+      Assert Equals(getline('.'), 'a c a  b  c   a   bc')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, s:endcol)
+      execute "normal 2d\<Plug>(textobj-char-i-F)c"
+      Assert Equals(getline('.'), 'ab  a  b  c   a   bc')
+    End
+
+
+    It fails if it cannot find the assigned character
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, s:endcol)
+      execute "normal d\<Plug>(textobj-char-i-F)d"
+      Assert Equals(getline('.'), 'ab c a  b  c   a   bc')
+    End
+
+
+    It fails if it cannot find the {count}th occurrence
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, s:endcol)
+      execute "normal 4d\<Plug>(textobj-char-i-F)a"
+      Assert Equals(getline('.'), 'ab c a  b  c   a   bc')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, s:endcol)
+      execute "normal 4d\<Plug>(textobj-char-i-F)b"
+      Assert Equals(getline('.'), 'ab c a  b  c   a   bc')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, s:endcol)
+      execute "normal 3d\<Plug>(textobj-char-i-F)c"
+      Assert Equals(getline('.'), 'ab c a  b  c   a   bc')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, s:endcol)
+      execute "normal 4d\<Plug>(textobj-char-i-F)c"
+      Assert Equals(getline('.'), 'ab c a  b  c   a   bc')
+    End
+  End
+
+  Context <Plug>(textobj-char-a-f)
+    It searches the assigned character forward
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, 1)
+      execute "normal d\<Plug>(textobj-char-a-f)a"
+      Assert Equals(getline('.'), 'ab cb  c   a   bc')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, 1)
+      execute "normal d\<Plug>(textobj-char-a-f)b"
+      Assert Equals(getline('.'), 'ac a  b  c   a   bc')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, 1)
+      execute "normal d\<Plug>(textobj-char-a-f)c"
+      Assert Equals(getline('.'), 'aba  b  c   a   bc')
+    End
+
+
+    It searches {count}th occurrence
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, 1)
+      execute "normal 2d\<Plug>(textobj-char-a-f)a"
+      Assert Equals(getline('.'), 'ab c a  b  cbc')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, 1)
+      execute "normal 2d\<Plug>(textobj-char-a-f)b"
+      Assert Equals(getline('.'), 'ab c ac   a   bc')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, 1)
+      execute "normal 3d\<Plug>(textobj-char-a-f)b"
+      Assert Equals(getline('.'), 'ab c a  b  c   ac')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, 1)
+      execute "normal 2d\<Plug>(textobj-char-a-f)c"
+      Assert Equals(getline('.'), 'ab c a  ba   bc')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, 1)
+      execute "normal 3d\<Plug>(textobj-char-a-f)c"
+      Assert Equals(getline('.'), 'ab c a  b  c   a   b')
+    End
+
+
+    It fails if it cannot find the assigned character
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, 1)
+      execute "normal d\<Plug>(textobj-char-a-f)d"
+      Assert Equals(getline('.'), 'ab c a  b  c   a   bc')
+    End
+
+
+    It fails if it cannot find the {count}th occurrence
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, 1)
+      execute "normal 3d\<Plug>(textobj-char-a-f)a"
+      Assert Equals(getline('.'), 'ab c a  b  c   a   bc')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, 1)
+      execute "normal 4d\<Plug>(textobj-char-a-f)a"
+      Assert Equals(getline('.'), 'ab c a  b  c   a   bc')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, 1)
+      execute "normal 4d\<Plug>(textobj-char-a-f)b"
+      Assert Equals(getline('.'), 'ab c a  b  c   a   bc')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, 1)
+      execute "normal 4d\<Plug>(textobj-char-a-f)c"
+      Assert Equals(getline('.'), 'ab c a  b  c   a   bc')
+    End
+  End
+
+  Context <Plug>(textobj-char-a-F)
+    It searches the assigned character backward
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, s:endcol)
+      execute "normal d\<Plug>(textobj-char-a-F)a"
+      Assert Equals(getline('.'), 'ab c a  b  cbc')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, s:endcol)
+      execute "normal d\<Plug>(textobj-char-a-F)b"
+      Assert Equals(getline('.'), 'ab c a  b  c   ac')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, s:endcol)
+      execute "normal d\<Plug>(textobj-char-a-F)c"
+      Assert Equals(getline('.'), 'ab c a  ba   bc')
+    End
+
+
+    It searches {count}th occurrence
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, s:endcol)
+      execute "normal 2d\<Plug>(textobj-char-a-F)a"
+      Assert Equals(getline('.'), 'ab cb  c   a   bc')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, s:endcol)
+      execute "normal 3d\<Plug>(textobj-char-a-F)a"
+      Assert Equals(getline('.'), 'b c a  b  c   a   bc')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, s:endcol)
+      execute "normal 2d\<Plug>(textobj-char-a-F)b"
+      Assert Equals(getline('.'), 'ab c ac   a   bc')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, s:endcol)
+      execute "normal 3d\<Plug>(textobj-char-a-F)b"
+      Assert Equals(getline('.'), 'ac a  b  c   a   bc')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, s:endcol)
+      execute "normal 2d\<Plug>(textobj-char-a-F)c"
+      Assert Equals(getline('.'), 'aba  b  c   a   bc')
+    End
+
+
+    It fails if it cannot find the assigned character
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, s:endcol)
+      execute "normal d\<Plug>(textobj-char-a-F)d"
+      Assert Equals(getline('.'), 'ab c a  b  c   a   bc')
+    End
+
+
+    It fails if it cannot find the {count}th occurrence
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, s:endcol)
+      execute "normal 4d\<Plug>(textobj-char-a-F)a"
+      Assert Equals(getline('.'), 'ab c a  b  c   a   bc')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, s:endcol)
+      execute "normal 4d\<Plug>(textobj-char-a-F)b"
+      Assert Equals(getline('.'), 'ab c a  b  c   a   bc')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, s:endcol)
+      execute "normal 3d\<Plug>(textobj-char-a-F)c"
+      Assert Equals(getline('.'), 'ab c a  b  c   a   bc')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, s:endcol)
+      execute "normal 4d\<Plug>(textobj-char-a-F)c"
+      Assert Equals(getline('.'), 'ab c a  b  c   a   bc')
+    End
+  End
+End
+
+
+Describe [xmap]
+  Context <Plug>(textobj-char-i-f)
+    It searches the assigned character forward
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, 1)
+      execute "normal v\<Plug>(textobj-char-i-f)ad"
+      Assert Equals(getline('.'), 'ab c   b  c   a   bc')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, 1)
+      execute "normal v\<Plug>(textobj-char-i-f)bd"
+      Assert Equals(getline('.'), 'a c a  b  c   a   bc')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, 1)
+      execute "normal v\<Plug>(textobj-char-i-f)cd"
+      Assert Equals(getline('.'), 'ab  a  b  c   a   bc')
+    End
+
+
+    It searches {count}th occurrence
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, 1)
+      execute "normal v2\<Plug>(textobj-char-i-f)ad"
+      Assert Equals(getline('.'), 'ab c a  b  c      bc')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, 1)
+      execute "normal v2\<Plug>(textobj-char-i-f)bd"
+      Assert Equals(getline('.'), 'ab c a    c   a   bc')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, 1)
+      execute "normal v3\<Plug>(textobj-char-i-f)bd"
+      Assert Equals(getline('.'), 'ab c a  b  c   a   c')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, 1)
+      execute "normal v2\<Plug>(textobj-char-i-f)cd"
+      Assert Equals(getline('.'), 'ab c a  b     a   bc')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, 1)
+      execute "normal v3\<Plug>(textobj-char-i-f)cd"
+      Assert Equals(getline('.'), 'ab c a  b  c   a   b')
+    End
+
+
+    It fails if it cannot find the assigned character
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, 1)
+      execute "normal v\<Plug>(textobj-char-i-f)dd"
+      Assert Equals(getline('.'), 'b c a  b  c   a   bc')
+    End
+
+
+    It fails if it cannot find the {count}th occurrence
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, 1)
+      execute "normal v3\<Plug>(textobj-char-i-f)ad"
+      Assert Equals(getline('.'), 'b c a  b  c   a   bc')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, 1)
+      execute "normal v4\<Plug>(textobj-char-i-f)ad"
+      Assert Equals(getline('.'), 'b c a  b  c   a   bc')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, 1)
+      execute "normal v4\<Plug>(textobj-char-i-f)bd"
+      Assert Equals(getline('.'), 'b c a  b  c   a   bc')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, 1)
+      execute "normal v4\<Plug>(textobj-char-i-f)cd"
+      Assert Equals(getline('.'), 'b c a  b  c   a   bc')
+    End
+  End
+
+  Context <Plug>(textobj-char-i-F)
+    It searches the assigned character backward
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, s:endcol)
+      execute "normal v\<Plug>(textobj-char-i-F)ad"
+      Assert Equals(getline('.'), 'ab c a  b  c      bc')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, s:endcol)
+      execute "normal v\<Plug>(textobj-char-i-F)bd"
+      Assert Equals(getline('.'), 'ab c a  b  c   a   c')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, s:endcol)
+      execute "normal v\<Plug>(textobj-char-i-F)cd"
+      Assert Equals(getline('.'), 'ab c a  b     a   bc')
+    End
+
+
+    It searches {count}th occurrence
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, s:endcol)
+      execute "normal v2\<Plug>(textobj-char-i-F)ad"
+      Assert Equals(getline('.'), 'ab c   b  c   a   bc')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, s:endcol)
+      execute "normal v3\<Plug>(textobj-char-i-F)ad"
+      Assert Equals(getline('.'), 'b c a  b  c   a   bc')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, s:endcol)
+      execute "normal v2\<Plug>(textobj-char-i-F)bd"
+      Assert Equals(getline('.'), 'ab c a    c   a   bc')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, s:endcol)
+      execute "normal v3\<Plug>(textobj-char-i-F)bd"
+      Assert Equals(getline('.'), 'a c a  b  c   a   bc')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, s:endcol)
+      execute "normal v2\<Plug>(textobj-char-i-F)cd"
+      Assert Equals(getline('.'), 'ab  a  b  c   a   bc')
+    End
+
+
+    It fails if it cannot find the assigned character
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, s:endcol)
+      execute "normal v\<Plug>(textobj-char-i-F)dd"
+      Assert Equals(getline('.'), 'ab c a  b  c   a   b')
+    End
+
+
+    It fails if it cannot find the {count}th occurrence
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, s:endcol)
+      execute "normal v4\<Plug>(textobj-char-i-F)ad"
+      Assert Equals(getline('.'), 'ab c a  b  c   a   b')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, s:endcol)
+      execute "normal v4\<Plug>(textobj-char-i-F)bd"
+      Assert Equals(getline('.'), 'ab c a  b  c   a   b')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, s:endcol)
+      execute "normal v3\<Plug>(textobj-char-i-F)cd"
+      Assert Equals(getline('.'), 'ab c a  b  c   a   b')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, s:endcol)
+      execute "normal v4\<Plug>(textobj-char-i-F)cd"
+      Assert Equals(getline('.'), 'ab c a  b  c   a   b')
+    End
+  End
+
+  Context <Plug>(textobj-char-a-f)
+    It searches the assigned character forward
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, 1)
+      execute "normal v\<Plug>(textobj-char-a-f)ad"
+      Assert Equals(getline('.'), 'ab cb  c   a   bc')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, 1)
+      execute "normal v\<Plug>(textobj-char-a-f)bd"
+      Assert Equals(getline('.'), 'ac a  b  c   a   bc')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, 1)
+      execute "normal v\<Plug>(textobj-char-a-f)cd"
+      Assert Equals(getline('.'), 'aba  b  c   a   bc')
+    End
+
+
+    It searches {count}th occurrence
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, 1)
+      execute "normal v2\<Plug>(textobj-char-a-f)ad"
+      Assert Equals(getline('.'), 'ab c a  b  cbc')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, 1)
+      execute "normal v2\<Plug>(textobj-char-a-f)bd"
+      Assert Equals(getline('.'), 'ab c ac   a   bc')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, 1)
+      execute "normal v3\<Plug>(textobj-char-a-f)bd"
+      Assert Equals(getline('.'), 'ab c a  b  c   ac')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, 1)
+      execute "normal v2\<Plug>(textobj-char-a-f)cd"
+      Assert Equals(getline('.'), 'ab c a  ba   bc')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, 1)
+      execute "normal v3\<Plug>(textobj-char-a-f)cd"
+      Assert Equals(getline('.'), 'ab c a  b  c   a   b')
+    End
+
+
+    It fails if it cannot find the assigned character
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, 1)
+      execute "normal v\<Plug>(textobj-char-a-f)dd"
+      Assert Equals(getline('.'), 'b c a  b  c   a   bc')
+    End
+
+
+    It fails if it cannot find the {count}th occurrence
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, 1)
+      execute "normal v3\<Plug>(textobj-char-a-f)ad"
+      Assert Equals(getline('.'), 'b c a  b  c   a   bc')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, 1)
+      execute "normal v4\<Plug>(textobj-char-a-f)ad"
+      Assert Equals(getline('.'), 'b c a  b  c   a   bc')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, 1)
+      execute "normal v4\<Plug>(textobj-char-a-f)bd"
+      Assert Equals(getline('.'), 'b c a  b  c   a   bc')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, 1)
+      execute "normal v4\<Plug>(textobj-char-a-f)cd"
+      Assert Equals(getline('.'), 'b c a  b  c   a   bc')
+    End
+  End
+
+  Context <Plug>(textobj-char-a-F)
+    It searches the assigned character backward
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, s:endcol)
+      execute "normal v\<Plug>(textobj-char-a-F)ad"
+      Assert Equals(getline('.'), 'ab c a  b  cbc')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, s:endcol)
+      execute "normal v\<Plug>(textobj-char-a-F)bd"
+      Assert Equals(getline('.'), 'ab c a  b  c   ac')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, s:endcol)
+      execute "normal v\<Plug>(textobj-char-a-F)cd"
+      Assert Equals(getline('.'), 'ab c a  ba   bc')
+    End
+
+
+    It searches {count}th occurrence
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, s:endcol)
+      execute "normal v2\<Plug>(textobj-char-a-F)ad"
+      Assert Equals(getline('.'), 'ab cb  c   a   bc')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, s:endcol)
+      execute "normal v3\<Plug>(textobj-char-a-F)ad"
+      Assert Equals(getline('.'), 'b c a  b  c   a   bc')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, s:endcol)
+      execute "normal v2\<Plug>(textobj-char-a-F)bd"
+      Assert Equals(getline('.'), 'ab c ac   a   bc')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, s:endcol)
+      execute "normal v3\<Plug>(textobj-char-a-F)bd"
+      Assert Equals(getline('.'), 'ac a  b  c   a   bc')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, s:endcol)
+      execute "normal v2\<Plug>(textobj-char-a-F)cd"
+      Assert Equals(getline('.'), 'aba  b  c   a   bc')
+    End
+
+
+    It fails if it cannot find the assigned character
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, s:endcol)
+      execute "normal v\<Plug>(textobj-char-a-F)dd"
+      Assert Equals(getline('.'), 'ab c a  b  c   a   b')
+    End
+
+
+    It fails if it cannot find the {count}th occurrence
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, s:endcol)
+      execute "normal v4\<Plug>(textobj-char-a-F)ad"
+      Assert Equals(getline('.'), 'ab c a  b  c   a   b')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, s:endcol)
+      execute "normal v4\<Plug>(textobj-char-a-F)bd"
+      Assert Equals(getline('.'), 'ab c a  b  c   a   b')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, s:endcol)
+      execute "normal v3\<Plug>(textobj-char-a-F)cd"
+      Assert Equals(getline('.'), 'ab c a  b  c   a   b')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, s:endcol)
+      execute "normal v4\<Plug>(textobj-char-a-F)cd"
+      Assert Equals(getline('.'), 'ab c a  b  c   a   b')
+    End
+  End
+End
+
+
+if has('patch-8.0.548')
+
+Describe [dot-repeat]
+  Context <Plug>(textobj-char-i-f)
+    It is repeated without any user input
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, 1)
+      execute "normal d\<Plug>(textobj-char-i-f)b"
+      normal! .
+      Assert Equals(getline('.'), 'a c a    c   a   bc')
+      normal! .
+      Assert Equals(getline('.'), 'a c a    c   a   c')
+    End
+
+
+    It uses the same count assigned previously
+      call setline(1, 'ab c a  b  c   a   bcabc')
+      call cursor(1, 1)
+      execute "normal d2\<Plug>(textobj-char-i-f)b"
+      normal! .
+      Assert Equals(getline('.'), 'ab c a    c   a   bcac')
+    End
+
+
+    It uses the new count if assigned explicitly
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, 1)
+      execute "normal d2\<Plug>(textobj-char-i-f)b"
+      normal! 1.
+      Assert Equals(getline('.'), 'ab c a    c   a   c')
+    End
+
+
+    It fails if the character is not found
+      call setline(1, 'ab c a  b  c')
+      call cursor(1, 1)
+      execute "normal d\<Plug>(textobj-char-i-f)a"
+      normal! .
+      Assert Equals(getline('.'), 'ab c   b  c')
+    End
+
+
+    It fails if the {count}th character is not found
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, 1)
+      execute "normal d2\<Plug>(textobj-char-i-f)a"
+      normal! .
+      Assert Equals(getline('.'), 'ab c a  b  c      bc')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, 1)
+      execute "normal d\<Plug>(textobj-char-i-f)b"
+      normal! 3.
+      Assert Equals(getline('.'), 'a c a  b  c   a   bc')
+    End
+  End
+
+  Context <Plug>(textobj-char-i-F)
+    It is repeated without any user input
+      call setline(1, 'abcabcabc')
+      call cursor(1, s:endcol)
+      execute "normal d\<Plug>(textobj-char-i-F)b"
+      normal! .
+      Assert Equals(getline('.'), 'abcacac')
+      normal! .
+      Assert Equals(getline('.'), 'acacac')
+    End
+
+
+    It uses the same count assigned previously
+      call setline(1, 'abcabcabcabc')
+      call cursor(1, s:endcol)
+      execute "normal d2\<Plug>(textobj-char-i-F)b"
+      normal! .
+      Assert Equals(getline('.'), 'acabcacabc')
+    End
+
+
+    It uses the new count if assigned explicitly
+      call setline(1, 'abcabcabcabc')
+      call cursor(1, s:endcol)
+      execute "normal d2\<Plug>(textobj-char-i-F)b"
+      normal! 1.
+      Assert Equals(getline('.'), 'abcacacabc')
+    End
+
+
+    It fails if the character is not found
+      call setline(1, 'abcabc')
+      call cursor(1, s:endcol)
+      execute "normal d\<Plug>(textobj-char-i-F)c"
+      normal! .
+      Assert Equals(getline('.'), 'ababc')
+    End
+
+
+    It fails if the {count}th character is not found
+      call setline(1, 'abcabcabc')
+      call cursor(1, s:endcol)
+      execute "normal d2\<Plug>(textobj-char-i-F)c"
+      normal! .
+      Assert Equals(getline('.'), 'ababcabc')
+
+      call setline(1, 'abcabcabc')
+      call cursor(1, s:endcol)
+      execute "normal d\<Plug>(textobj-char-i-F)b"
+      normal! 3.
+      Assert Equals(getline('.'), 'abcabcac')
+    End
+  End
+
+  Context <Plug>(textobj-char-a-f)
+    It is repeated without any user input
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, 1)
+      execute "normal d\<Plug>(textobj-char-a-f)b"
+      normal! .
+      Assert Equals(getline('.'), 'ac ac   a   bc')
+      normal! .
+      Assert Equals(getline('.'), 'ac ac   ac')
+    End
+
+
+    It uses the same count assigned previously
+      call setline(1, 'ab c a  b  c   a   bcabc')
+      call cursor(1, 1)
+      execute "normal d2\<Plug>(textobj-char-a-f)b"
+      normal! .
+      Assert Equals(getline('.'), 'ab c ac   a   bcac')
+    End
+
+
+    It uses the new count if assigned explicitly
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, 1)
+      execute "normal d2\<Plug>(textobj-char-a-f)b"
+      normal! 1.
+      Assert Equals(getline('.'), 'ab c ac   ac')
+    End
+
+
+    It fails if the character is not found
+      call setline(1, 'ab c a  b  c')
+      call cursor(1, 1)
+      execute "normal d\<Plug>(textobj-char-a-f)a"
+      normal! .
+      Assert Equals(getline('.'), 'ab cb  c')
+    End
+
+
+    It fails if the {count}th character is not found
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, 1)
+      execute "normal d2\<Plug>(textobj-char-a-f)a"
+      normal! .
+      Assert Equals(getline('.'), 'ab c a  b  cbc')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, 1)
+      execute "normal d\<Plug>(textobj-char-a-f)b"
+      normal! 3.
+      Assert Equals(getline('.'), 'ac a  b  c   a   bc')
+    End
+  End
+
+  Context <Plug>(textobj-char-a-F)
+    It is repeated without any user input
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, s:endcol)
+      execute "normal d\<Plug>(textobj-char-a-F)b"
+      normal! .
+      Assert Equals(getline('.'), 'ab c ac   ac')
+      normal! .
+      Assert Equals(getline('.'), 'ac ac   ac')
+    End
+
+
+    It uses the same count assigned previously
+      call setline(1, 'ab c a  b  c   a   bcabc')
+      call cursor(1, s:endcol)
+      execute "normal d2\<Plug>(textobj-char-a-F)b"
+      normal! .
+      Assert Equals(getline('.'), 'ac a  b  c   acabc')
+    End
+
+
+    It uses the new count if assigned explicitly
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, s:endcol)
+      execute "normal d2\<Plug>(textobj-char-a-F)b"
+      normal! 1.
+      Assert Equals(getline('.'), 'ac ac   a   bc')
+    End
+
+
+    It fails if the character is not found
+      call setline(1, 'a  b  c   a   bc')
+      call cursor(1, s:endcol)
+      execute "normal d\<Plug>(textobj-char-a-F)c"
+      normal! .
+      Assert Equals(getline('.'), 'a  ba   bc')
+    End
+
+
+    It fails if the {count}th character is not found
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, s:endcol)
+      execute "normal d2\<Plug>(textobj-char-a-F)c"
+      normal! .
+      Assert Equals(getline('.'), 'aba  b  c   a   bc')
+
+      call setline(1, 'ab c a  b  c   a   bc')
+      call cursor(1, s:endcol)
+      execute "normal d\<Plug>(textobj-char-a-F)b"
+      normal! 3.
+      Assert Equals(getline('.'), 'ab c a  b  c   ac')
+    End
+  End
+End
+
+endif
+

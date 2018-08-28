@@ -1,0 +1,4 @@
+execute 'set runtimepath+=' . expand('<sfile>:p:h:h')
+runtime! plugin/*.vim
+
+" vim:set noet ts=2 sw=2 sts=2:
